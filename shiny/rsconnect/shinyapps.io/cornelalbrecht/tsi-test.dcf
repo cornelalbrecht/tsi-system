@@ -2,6 +2,6 @@ name: tsi-test
 account: cornelalbrecht
 server: shinyapps.io
 appId: 79853
-bundleId: 357087
+bundleId: 357445
 url: https://cornelalbrecht.shinyapps.io/tsi-test/
-when: 1453658051.65083
+when: 1453671178.00847

@@ -14,6 +14,7 @@ shinyUI(fluidPage(
   
   # Sidebar
   sidebarPanel(
+    p("System Status:"),
     textOutput("dt")
     
                ),#End SidbarPanel
@@ -26,8 +27,11 @@ shinyUI(fluidPage(
     tabsetPanel(
       
       #Tabpanel Ampel
-      tabPanel("Market Indicator",
-               h3("Market Momentum Indicator")
+      tabPanel("TecDAX/SDAX",
+               h3("TecDAX/SDAX Momentum Indicator"),
+               p(textOutput("TecSMEAN")),
+               hr(),
+               dataTableOutput("TecS")
                
                ),#Close Tabset
       
