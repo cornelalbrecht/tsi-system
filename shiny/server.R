@@ -8,6 +8,7 @@ Quandl.api_key("Uy7EG7K9GveKstF_LRzy")
 library(TTR)
 library(dplyr)
 library(googleVis)
+library(DT)
 
 shinyServer(function(input, output) {
   
@@ -60,8 +61,14 @@ shinyServer(function(input, output) {
     TSIlist <- merge(TSI, ticks, by.x = "Ticker", by.y = "Ticker")
     TSIlist <- TSIlist %>% arrange(desc(TSI)) %>% select(Name, TSI, Date)
     
-    output$TecSMEAN <- renderText(sprintf("Sell-level: %.3f",mean(TSIlist$TSI)))
-    output$TecS <- renderDataTable(TSIlist, options = list(orderClasses = TRUE))
+    output$TecSMEAN <- renderText(sprintf("Sell-level: %.3f",quantile(TSIlist$TSI, 0.8)))
+    #output$TecSMEAN <- renderText(sprintf("Sell-level: %.3f",quantile(TSIlist$x$data$TSI, 0.8)))
+    
+    #TSIlist <- datatable(TSIlist, filter = "top")
+    #output$TecS <- renderDataTable(TSIlist)
+    output$TecS <- renderGvis({
+      gvisTable(TSIlist)
+    })
     
     
   

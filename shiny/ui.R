@@ -5,6 +5,11 @@
 # Libraries
 library(shiny)
 library(Quandl)
+Quandl.api_key("Uy7EG7K9GveKstF_LRzy")
+library(TTR)
+library(dplyr)
+library(googleVis)
+library(DT)
 
 # Shiny
 shinyUI(fluidPage(
@@ -31,7 +36,8 @@ shinyUI(fluidPage(
                h3("TecDAX/SDAX Momentum Indicator"),
                p(textOutput("TecSMEAN")),
                hr(),
-               dataTableOutput("TecS")
+               #dataTableOutput("TecS")
+               htmlOutput("TecS")
                
                ),#Close Tabset
       
