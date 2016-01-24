@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+bundleId:
+        https://api.rpubs.com/api/v1/document/143669/1df58724e9954d98a805bd400159d93c
+url: http://rpubs.com/cornelalbrecht/143669
+when: 1453642912.82665

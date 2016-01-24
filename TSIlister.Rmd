@@ -1,0 +1,97 @@
+---
+title: "TSI Lists"
+author: "CA"
+date: "January 15, 2016"
+output: 
+  html_document: 
+    keep_md: yes
+    toc: yes
+---
+
+## TSI Momentum Indicator
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE, results='hide'}
+# Setup
+setwd("~/Google Drive/TSI/R-Version/GITed Version")
+
+# Packages
+library(ggplot2)
+library(dplyr)
+library(zoo)
+library(TTR)
+library(lubridate)
+library(quantmod)
+#library(googleVis)
+library(xtable)
+#library(downloader)
+library(rmarkdown)
+```
+{r, echo=TRUE, message=FALSE, warning=FALSE, results='hide', cache=FALSE, error=TRUE}
+```{r}
+knitr::opts_chunk$set(error=FALSE) 
+## MARKDOWN ERROR SUPPRESSSION DOESNT WORK :-()
+
+ticks <- read.csv("./tickerlists/TecDAXSDAX.csv", as.is = TRUE)
+
+#Debug
+#ticks <- ticks[1:10,]
+
+# Dates
+to <- Sys.Date()
+from <- to-300
+
+stockdata <- new.env()
+
+# Pull data
+a <- try(getSymbols(ticks$X.TECDAX, env = stockdata, from = from, to = to))
+
+# Loop over Envirment to compute ratio
+TSI <- xts()
+
+
+for (i in ls(stockdata)){
+  
+  # pull to tmp
+  #rm(tmp)
+  tmp <- stockdata[[i]]
+  
+  # Compute TSI Ratio
+  tmp$Ratio <- SMA(tmp[,6], n = 30) / SMA(tmp[,6], n = 126)
+  
+  # Remove NAs
+  tmp <- tmp[!is.na(tmp$Ratio)]
+  
+  # Put back into environment
+  #stockdata[[i]] <- tmp
+  
+  # Pull last 30 TSIs for each
+  TSI <- cbind.xts(TSI,last(tmp$Ratio, 30))
+
+}
+
+
+# Set TSI ColumnNames
+colnames(TSI) <- ls(stockdata)
+
+# Since we pull the last 20 values, but not every day is traded everywhere, we
+# ended up with far more values, but we're really only interested in the last 20
+TSI <- last(TSI, 20)
+
+####### messy from here on, needs fixing ######
+
+# Sort by TSI
+b <- data.frame(Names = names(TSI), TSI = matrix(t(last(TSI))))
+c <- merge(ticks, b, by.x = "X.TECDAX", by.y = "Names")
+
+c <- arrange(c, desc(TSI))
+
+```
+# TSI LIST
+
+```{r, results='asis'}
+
+print(xtable(c), type = "html")
+
+```
+
+EOF

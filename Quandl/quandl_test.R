@@ -1,0 +1,49 @@
+
+setwd("~/Google Drive/TSI/R-Version/GITed Version/Quandl")
+
+library(Quandl)
+library(lubridate)
+library(dplyr)
+library(quantmod)
+
+
+Quandl.api_key("Uy7EG7K9GveKstF_LRzy")
+
+stdt <- "2013-01-01"
+
+tickers <- read.csv("HDAX.csv", stringsAsFactors = FALSE)
+
+tickers$Quandl <- paste("SSE/", tickers$Ticker, sep = "")
+
+
+# Make new Env
+dat <- new.env()
+
+#DEbug
+#tickers <- tickers %>% top_n(200)
+
+
+# Download loop
+system.time(
+  for (i in 1:nrow(tickers)) {
+    try(dat[[tickers$Ticker[i]]] <- Quandl(tickers$Quandl[i], start_date = stdt, type = "xts"))
+  }
+)
+
+# Analysis Loop
+
+for(i in ls(dat)){
+  
+  # same as before: pull data
+  tmp <- dat[[i]]
+  
+  tmp$a <- SMA(tmp[,6], 125)
+  tmp$b <- SMA(tmp[,6], 25)
+  
+  tmp$c <- tmp$b/tmp$a
+  
+  dat[[i]] <- tmp
+  
+}
+
+
