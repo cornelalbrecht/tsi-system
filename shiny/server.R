@@ -48,18 +48,25 @@ shinyServer(function(input, output) {
       tmp <- tmp %>% arrange(Date)
       tmp$sma125 <- SMA(tmp$`Previous Day Price`, 125)
       tmp$sma25 <- SMA(tmp$`Previous Day Price`, 25)
+      
+      # INJECT VOLA CONTOROL
+      tmp$ret <- 1-tmp$`Previous Day Price` / lag(tmp$`Previous Day Price`)
+      max1 <- max(tmp$ret, na.rm = TRUE)#sum(tmp$ret >= 0.03, na.rm = TRUE) / nrow(tmp)
+      min1 <- min(tmp$ret, na.rm = TRUE)
+      
       tmp$TSI <- tmp$sma25 / tmp$sma125
       tmp <- tmp %>% arrange(desc(Date))
-      s[[i]] <- tmp
-      TSI <- rbind(TSI, data.frame(tmp$Date[1], i, tmp$TSI[1]))
+      #s[[i]] <- tmp
+      #OUTPUT w/ vola
+      TSI <- rbind(TSI, data.frame(tmp$Date[1], i, tmp$TSI[1], max1, min1))
       })#End Try 
     }#End FOR loop
     
     # Cosmetics
-    colnames(TSI) <- c("Date", "Ticker", "TSI")
+    colnames(TSI) <- c("Date", "Ticker", "TSI", "max1", "min1")
     # Merge
     TSIlist <- merge(TSI, ticks, by.x = "Ticker", by.y = "Ticker")
-    TSIlist <- TSIlist %>% arrange(desc(TSI)) %>% select(Name, TSI, Date)
+    TSIlist <- TSIlist %>% arrange(desc(TSI)) %>% select(Name, TSI, Date, max1, min1)
     
     output$TecSMEAN <- renderText(sprintf("Sell-level: %.3f",quantile(TSIlist$TSI, 0.8)))
     #output$TecSMEAN <- renderText(sprintf("Sell-level: %.3f",quantile(TSIlist$x$data$TSI, 0.8)))
