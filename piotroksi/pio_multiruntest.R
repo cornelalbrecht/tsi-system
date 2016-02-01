@@ -1,12 +1,12 @@
 
 ### optnal
-
+setwd("~/Google Drive/TSI/R-Version/GITed Version/piotroksi")
 library(dplyr)
 library(quantmod)
 library(xtable)
 
 source("piotroski.R")
-setwd("~/Google Drive/TSI/R-Version/GITed Version/piotroksi")
+
 ticks <- read.csv("nasdaq100list.csv")
 
 
@@ -45,7 +45,9 @@ a$MarketCap <- gsub("M","000000", a$MarketCap)
 a$MarketCap <- gsub("B","000000000", a$MarketCap)
 a$MarketCap <- as.numeric(a$MarketCap)
 
-a <- a %>%  group_by(Sector) %>%  arrange(desc(MarketCap)) %>% filter(IPOyear < "2013", MarketCap > "50000000")
+#a <- a %>%  group_by(Sector) %>%  arrange(desc(MarketCap)) %>% filter(IPOyear < "2013", MarketCap > "50000000")
+
+a <- a %>%  group_by(Sector) %>%  arrange(desc(MarketCap)) %>% filter(MarketCap > "50000000")
 
 ticks <- a
 
